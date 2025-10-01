@@ -1,22 +1,22 @@
 
-# MiniPay PSP — Postgres Edition (Complete Day 1 & Day 2 Deliverables)
+# MiniPay PSP
 
-**Stack:** Java 17, Spring Boot 3.3, Spring Security, Spring Data JPA, PostgreSQL, Flyway, MapStruct, Lombok, Testcontainers, Apache POI, springdoc-openapi.
-
-This repository is a scaffold for the MiniPay PSP coding challenge. It includes Day 1 (project setup + Docker) and Day 2 (database schema, JPA entities, Flyway migrations) work and instructions to continue through the full challenge.
+A payment service provider simulation built with **Java 17, Spring Boot 3, PostgreSQL, Flyway, Docker**.
 
 ---
 
-## 1. Architecture (Mermaid)
+## 🚀 Architecture
 ```mermaid
 flowchart LR
   A[Client / Merchant] -->|API Requests| B[MiniPay App (Spring Boot)]
-  B --> C[PostgreSQL (Flyway migrations)]
+  B --> C[(PostgreSQL \n Flyway migrations)]
   B --> D[External Processor Simulator]
   B --> E[Webhook Dispatcher] --> A
+
   subgraph Observability
     B -.-> F[Actuator / Metrics / Logs]
   end
+
 ```
 
 ---

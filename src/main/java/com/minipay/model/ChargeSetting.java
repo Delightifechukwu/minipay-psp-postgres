@@ -20,6 +20,7 @@ public class ChargeSetting {
     private Merchant merchant;
     private BigDecimal percentageFee;
     private BigDecimal fixedFee;
+    @Column(name = "use_fixed_msc")
     private Boolean useFixedMSC;
     private BigDecimal mscCap;
     private BigDecimal vatRate;

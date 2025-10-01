@@ -1,6 +1,8 @@
 
 package com.minipay;
 
+import com.minipay.model.Role;
+import com.minipay.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,43 +12,56 @@ import com.minipay.model.User;
 import com.minipay.model.Merchant;
 import com.minipay.repository.UserRepository;
 import com.minipay.repository.MerchantRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Set;
 import java.time.Instant;
 
 @SpringBootApplication
 public class MinipayApplication {
+
     public static void main(String[] args) {
+
         SpringApplication.run(MinipayApplication.class, args);
+        System.out.println("**********Application Started**********");
     }
 
     @Bean
-    CommandLineRunner runner(UserRepository userRepo, MerchantRepository merchantRepo) {
+    CommandLineRunner runner(UserRepository userRepo,
+                             RoleRepository roleRepo,
+                             MerchantRepository merchantRepo) {
         return args -> {
+            if (roleRepo.count() == 0) {
+                roleRepo.save(new Role(null, "ADMIN"));
+                roleRepo.save(new Role(null, "MERCHANT_USER"));
+            }
+
+            Role adminRole = roleRepo.findByName("ADMIN")
+                    .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+
             if (userRepo.count() == 0) {
-                userRepo.save(User.builder()
+                User admin = User.builder()
                         .username("admin")
-                        .passwordHash("$2a$10$devplaceholder") // change in prod
+                        .passwordHash(new BCryptPasswordEncoder().encode("admin123"))
                         .email("admin@example.com")
                         .status("ACTIVE")
-                        .roles(Set.of("ADMIN"))
                         .createdAt(Instant.now())
-                        .build());
+                        .roles(Set.of(adminRole))
+                        .build();
+                userRepo.save(admin);
             }
+
             if (merchantRepo.count() == 0) {
                 merchantRepo.save(Merchant.builder()
                         .merchantId("MERCH-001")
-                        .name("Test Merchant")
+                        .name("Demo Merchant")
                         .email("merchant@example.com")
                         .status("ACTIVE")
-                        .settlementAccount("1234567890")
-                        .settlementBank("Test Bank")
-                        .callbackUrl("https://example.com/webhook")
-                        .webhookSecret("change-me")
                         .createdAt(Instant.now())
                         .updatedAt(Instant.now())
                         .build());
             }
         };
     }
+
 }
