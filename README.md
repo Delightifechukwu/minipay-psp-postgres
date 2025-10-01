@@ -6,7 +6,7 @@ A payment service provider simulation built with **Java 17, Spring Boot 3, Postg
 ---
 
 ## 🚀 Architecture
-<pre> ```mermaid flowchart LR A[Client / Merchant] -->|API Requests| B[MiniPay App (Spring Boot)] B --> C[(PostgreSQL <br/> Flyway migrations)] B --> D[External Processor Simulator] B --> E[Webhook Dispatcher] --> A subgraph Observability B -.-> F[Actuator / Metrics / Logs] end ``` </pre>
+```mermaid flowchart LR A[Client / Merchant] -->|API Requests| B[MiniPay App (Spring Boot)] B --> C[(PostgreSQL <br/> Flyway migrations)] B --> D[External Processor Simulator] B --> E[Webhook Dispatcher] --> A subgraph Observability B -.-> F[Actuator / Metrics / Logs] end ```
 
 ---
 
