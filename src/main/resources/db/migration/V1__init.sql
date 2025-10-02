@@ -1,26 +1,30 @@
 
 -- V1__init.sql - initial schema for minipay
 
+-- Roles
 CREATE TABLE roles (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+                       id BIGSERIAL PRIMARY KEY,
+                       name VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- Users
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    email VARCHAR(150) UNIQUE,
-    status VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+                       id BIGSERIAL PRIMARY KEY,
+                       username VARCHAR(100) NOT NULL UNIQUE,
+                       password_hash VARCHAR(255) NOT NULL,
+                       email VARCHAR(150) NOT NULL UNIQUE,
+                       status VARCHAR(20) NOT NULL,
+                       created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- User ↔ Role Mapping (Join Table)
 CREATE TABLE user_roles (
-    user_id BIGINT NOT NULL,
-    role_id BIGINT NOT NULL,
-    PRIMARY KEY(user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (role_id) REFERENCES roles(id)
+                            user_id BIGINT NOT NULL,
+                            role_id BIGINT NOT NULL,
+                            assigned_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                            PRIMARY KEY (user_id, role_id),
+                            CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                            CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 CREATE TABLE merchants (
@@ -106,6 +110,11 @@ CREATE TABLE settlement_items (
     FOREIGN KEY (batch_id) REFERENCES settlement_batches(id),
     FOREIGN KEY (payment_id) REFERENCES payments(id)
 );
+
+-- Indexes for faster lookup
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_roles_name ON roles(name);
 
 -- Indexes for heavy queries
 CREATE INDEX idx_payments_merchant_created ON payments(merchant_id, created_at);

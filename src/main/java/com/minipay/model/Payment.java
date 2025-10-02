@@ -18,13 +18,15 @@ public class Payment {
     private Long id;
     @Column(name = "payment_ref", unique = true, nullable = false)
     private UUID paymentRef;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
     private String orderId;
     private BigDecimal amount;
     private String currency;
+    @Enumerated(EnumType.STRING)
     private String channel;
+    @Enumerated(EnumType.STRING)
     private String status;
     private BigDecimal msc;
     private BigDecimal vatAmount;
@@ -35,4 +37,11 @@ public class Payment {
     private String customerId;
     private Instant createdAt;
     private Instant updatedAt;
+    public enum Status {
+        PENDING, SUCCESS, FAILED
+    }
+
+    public enum Channel {
+        CARD, WALLET, BANK_TRANSFER
+    }
 }

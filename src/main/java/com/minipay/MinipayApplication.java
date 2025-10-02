@@ -31,20 +31,15 @@ public class MinipayApplication {
                              RoleRepository roleRepo,
                              MerchantRepository merchantRepo) {
         return args -> {
-            if (roleRepo.count() == 0) {
-                roleRepo.save(new Role(null, "ADMIN"));
-                roleRepo.save(new Role(null, "MERCHANT_USER"));
-            }
-
-            Role adminRole = roleRepo.findByName("ADMIN")
-                    .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+            Role adminRole = roleRepo.findByNameWithUsers("ADMIN")
+                    .orElseGet(() -> roleRepo.save(Role.builder().name("ADMIN").build()));
 
             if (userRepo.count() == 0) {
                 User admin = User.builder()
                         .username("admin")
-                        .passwordHash(new BCryptPasswordEncoder().encode("admin123"))
+                        .passwordHash(new BCryptPasswordEncoder().encode("admin123")) // change in prod
                         .email("admin@example.com")
-                        .status("ACTIVE")
+                        .status(User.Status.ACTIVE)
                         .createdAt(Instant.now())
                         .roles(Set.of(adminRole))
                         .build();
@@ -63,5 +58,6 @@ public class MinipayApplication {
             }
         };
     }
+
 
 }

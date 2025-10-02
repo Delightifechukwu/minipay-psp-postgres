@@ -1,11 +1,12 @@
-
+// src/main/java/com/minipay/model/SettlementBatch.java
 package com.minipay.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "settlement_batches")
@@ -14,16 +15,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class SettlementBatch {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "settlement_ref", unique = true, nullable = false)
-    private UUID settlementRef;
+
+    @Column(unique = true, nullable = false)
+    private String settlementRef; // UUID
+
     @ManyToOne
-    @JoinColumn(name = "merchant_id")
+    @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
+
     private Instant periodStart;
     private Instant periodEnd;
-    private Integer count;
+
+    private int count;
     private BigDecimal transactionAmount;
     private BigDecimal msc;
     private BigDecimal vatAmount;
@@ -32,6 +38,16 @@ public class SettlementBatch {
     private BigDecimal income;
     private BigDecimal payableVat;
     private BigDecimal amountPayable;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     private Instant createdAt;
+
+    @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SettlementItem> items;
+
+    public enum Status {
+        PENDING, POSTED
+    }
 }

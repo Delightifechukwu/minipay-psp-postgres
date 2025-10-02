@@ -14,15 +14,25 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String username;
+
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+
+    @Column(unique = true, nullable = false)
     private String email;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
     private Instant createdAt;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -31,4 +41,8 @@ public class User {
     )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
+
+    public enum Status {
+        ACTIVE, SUSPENDED
+    }
 }
